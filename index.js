@@ -1,5 +1,6 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
+console.log(battleZonesData)
 
 canvas.width = 1024
 canvas.height = 576
@@ -7,6 +8,11 @@ canvas.height = 576
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i += 70) {
   collisionsMap.push(collisions.slice(i, 70 + i))
+}
+
+const battleZonesMap = []
+for (let i = 0; i < battleZonesData.length; i +=70) {
+  battleZonesMap.push(battleZonesData.slice(i, 70 + i))
 }
 
 
@@ -30,6 +36,24 @@ collisionsMap.forEach((row, i) => {
       )
   })
 })
+
+const batteleZones = []
+
+battleZonesMap.forEach((row, i) => {
+  row.forEach((symbol, j) => {
+    if (symbol === 1025)
+      batteleZones.push(
+        new Boundary({
+          position: {
+            x: j * Boundary.width + offset.x,
+            y: j * Boundary.height + offset.y
+          }
+        })
+      )
+  })
+})
+
+console.log(batteleZones)
 
 const image = new Image()
 image.src = './img/Pellet Town.png'
@@ -100,7 +124,7 @@ const keys = {
   }
 }
 
-const movables = [background, ...boundaries, foreground]
+const movables = [background, ...boundaries, foreground, ...batteleZones]
 
 function rectangularCollision({ rectangle1, rectangle2 }) {
   return (
@@ -110,6 +134,11 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
     rectangle1.position.y + rectangle1.height >= rectangle2.position.y
   )
 }
+
+const battle = {
+  initiated: false
+}
+
 function animate() {
   window.requestAnimationFrame(animate)
   background.draw()
