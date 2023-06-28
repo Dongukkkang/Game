@@ -1,6 +1,5 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
-console.log(battleZonesData)
 
 canvas.width = 1024
 canvas.height = 576
@@ -140,16 +139,73 @@ const battle = {
 }
 
 function animate() {
-  window.requestAnimationFrame(animate)
+  const animationId = window.requestAnimationFrame(animate)
   background.draw()
   boundaries.forEach((boundary) => {
     boundary.draw()
+  })
+  batteleZones.forEach((battleZone) => {
+    battleZone.draw()
   })
   player.draw()
   foreground.draw()
 
   let moving = true
   player.moving = false
+
+  console.log(animationId)
+  if (battle.initiated) return
+
+  //Battle 조건
+  if (keys.w.pressed || keys.a.pressed || keys.s.pressed || keys.d.pressed) {
+    for (let i = 0; i < batteleZones.length; i++) {
+      const battleZone = batteleZones[i]
+      const overlappingArea =
+      (Math.min(
+        player.position.x + player.width,
+        batteleZone.position.x + batteleZone.width
+      ) -
+        Math.max(player.position.x, battleZone.position.x)) *
+      (Math.min(
+        player.position.y + player.height,
+        battleZone.position.y + batteleZone.height
+      ) -
+        Math.max(player.position.y, battleZone.position.y))
+      if (
+        rectangularCollision({
+          rectangle1: player,
+          rectangle2: batteleZone
+        }) && 
+        overlappingArea > (player.width * player.height) / 2 &&
+        Math.random() < 0.01
+      ) {
+        console.log('activate batle')
+
+
+        //현재 애니메이션 비활성화
+        window.cancelAnimationFrame(animationId)
+
+        battle.initiated = true
+        gsap.to('#overlappingDiv', {
+          opacity: 1,
+          repeat: 3,
+          yoyo: true,
+          duration: 0.4,
+          onComplete() {
+            gsap.to('#overlappingDiv', {
+              opacity: 1,
+              duration: 0.4
+            })
+
+            //새로운 애니메이션 활성화
+            animateBattle()
+          }
+        })
+        break
+      }
+    }
+  }
+
   if (keys.w.pressed && lastKey === 'w') {
     player.moving = true
     player.image = player.sprites.up
@@ -261,6 +317,11 @@ function animate() {
   }
 }
 animate()
+
+function animateBattle() {
+  window.requestAnimationFrame(animateBattle)
+  console.log('animating battle')
+}
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
