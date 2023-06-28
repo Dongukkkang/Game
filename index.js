@@ -37,8 +37,17 @@ image.src = './img/Pellet Town.png'
 const foregroundImage = new Image()
 image.src = './img/foregroundObjects.png'
 
-const playerImage = new Image()
+const playerDownImage = new Image()
 playerImage.src = './img/playerDown.png'
+
+const playerUpImage = new Image()
+playerImage.src = './img/playerUp.png'
+
+const playerLeftImage = new Image()
+playerImage.src = './img/playerLeft.png'
+
+const playerRightImage = new Image()
+playerImage.src = './img/playerRight.png'
 
 
 
@@ -47,11 +56,18 @@ const player = new Sprite({
     x: canvas.width / 2 - 192 / 4 / 2,
     y: canvas.height / 2 - 68 / 2
   },
-  image: playerImage,
+  image: playerDownImage,
   frames: {
     max: 4
+  },
+  sprites: {
+    up: playerUpImage,
+    playerLeftImage: playerLeftImage,
+    right: playerRightImage,
+    down: playerDownImage
   }
 })
+console.log(player)
 
 const background = new Sprite({
   position: {
@@ -104,7 +120,11 @@ function animate() {
   foreground.draw()
 
   let moving = true
+  player.moving = false
   if (keys.w.pressed && lastKey === 'w') {
+    player.moving = true
+    player.image = player.sprites.up
+
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i]
       if (
@@ -129,6 +149,9 @@ function animate() {
         movable.position.y += 3
       })
   } else if (keys.a.pressed && lastKey === 'a') {
+    player.moving = true
+    player.moving = player.sprites.left
+
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i]
       if (
@@ -153,6 +176,9 @@ function animate() {
         movable.position.x += 3
       })
   } else if (keys.s.pressed && lastKey === 's') {
+    player.moving = true
+    player.moving = player.sprites.down
+
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i]
       if (
@@ -177,6 +203,9 @@ function animate() {
         movable.position.y -= 3
       })
   } else if (keys.d.pressed && lastKey === 'd') {
+    player.moving = true
+    player.moving = player.sprites.right
+
     for (let i = 0; i < boundaries.length; i++) {
       const boundary = boundaries[i]
       if (
