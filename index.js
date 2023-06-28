@@ -194,11 +194,18 @@ function animate() {
           onComplete() {
             gsap.to('#overlappingDiv', {
               opacity: 1,
-              duration: 0.4
+              duration: 0.4,
+              onComplete() {
+                //새로운 애니메이션 활성화
+                animateBattle()
+                gsap.to('#overlappingDiv', {
+                  opacity: 0,
+                  duration: 0.4
+                })    
+              }
             })
 
-            //새로운 애니메이션 활성화
-            animateBattle()
+            
           }
         })
         break
@@ -316,12 +323,25 @@ function animate() {
       })
   }
 }
-animate()
+// animate()
+
+const battleBackgroundImage = new Image()
+battleBackgroundImage.src = './img/battleBackground.png'
+const battleBackground = new Sprite({
+  position: {
+    x: 0,
+    y: 0
+  },
+  image: battleBackgroundImage
+})
+
 
 function animateBattle() {
   window.requestAnimationFrame(animateBattle)
-  console.log('animating battle')
+  battleBackground.draw()
 }
+
+animateBattle()
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
